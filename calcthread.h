@@ -27,6 +27,7 @@ private:
     const int BUFF_SIZE = 8192;
     const int TEXT_MAX_SIZE = 192;
     int numFiles;
+    bool isTextData(const QByteArray&);
     void listfilesindir(QString path, QList<QString>*);
     void check(const QList<QString>&);
 

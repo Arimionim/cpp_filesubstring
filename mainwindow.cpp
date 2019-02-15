@@ -19,9 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
     model = new QFileSystemModel(this);
     model->setFilter(QDir::QDir::AllEntries);
     model->setRootPath("");
+
     ui->dir->setModel(model);
     ui->progressBar->setValue(0);
     job = nullptr;
+
 
     ui->stopButton->setEnabled(false);
 }
@@ -29,6 +31,13 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::dataChanged(){
+    ui->statusBar->showMessage("Dir was changed", 1000);
+    rootPath = "";
+    trigrams.clear();
 }
 
 
@@ -60,6 +69,7 @@ void MainWindow::on_dir_doubleClicked(const QModelIndex &index){
     else if (fileInfo.isDir()){
         listView->setRootIndex(index);
     }
+
     ui->path->setText(model->filePath(listView->rootIndex()));
 }
 
@@ -72,19 +82,23 @@ void MainWindow::on_startButton_clicked()
     }
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(true);
-    calcThread *calc = new calcThread();
+    calcThread *calc = new calcThread(model->filePath(ui->dir->rootIndex()), temp, trigrams, watcher);
     ui->result->clear();
     job = new QThread;
 
-    calc->path = model->filePath(ui->dir->rootIndex());
-    calc->temp = temp;
-
-    rootPath = model->filePath(ui->dir->rootIndex());
+    if (model->filePath(ui->dir->rootIndex()) == rootPath){
+        calc->dirChanged = false;
+    }
+    else{
+        rootPath = model->filePath(ui->dir->rootIndex());
+        calc->dirChanged = true;
+    }
     connect(job, &QThread::started, calc, &calcThread::run);
 
     connect(calc, &calcThread::finished, this, &MainWindow::scanFinished);
     connect(calc, &calcThread::setProgress, this, &MainWindow::setProgress);
     connect(calc, &calcThread::sendFile, this, &MainWindow::getFile);
+    connect(&calc->watcher, &QFileSystemWatcher::directoryChanged, this, &MainWindow::dataChanged);
 
     connect(job, &QThread::finished, calc, &calcThread::deleteLater);
     connect(job, &QThread::finished, job, &QThread::deleteLater);

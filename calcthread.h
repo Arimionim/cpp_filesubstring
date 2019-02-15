@@ -8,12 +8,21 @@
 #include <QFileSystemModel>
 #include <QObject>
 
+#include <unordered_set>
+
 class calcThread : public QObject
- {
+{
     Q_OBJECT
 public:
+    calcThread(QString const & path, QString const & temp,
+               std::unordered_map<std::string, std::unordered_set<uint32_t>>& trigrams, QFileSystemWatcher &watcher)
+        :path(path), temp(temp), trigrams(trigrams), watcher(watcher), dirChanged(true){}
+
+    QFileSystemWatcher &watcher;
     QString path;
     QString temp;
+    bool dirChanged;
+    std::unordered_map<std::string, std::unordered_set<uint32_t>>& trigrams;
 
 public slots:
     void run();
@@ -30,6 +39,8 @@ private:
     bool isTextData(const QByteArray&);
     void listfilesindir(QString path, QList<QString>*);
     void check(const QList<QString>&);
+    void addTrigram(std::unordered_set<uint32_t>&, const char*, int);
+    void setTrigrams(QFile &);
 
 };
 #endif // CALCTHREAD_H

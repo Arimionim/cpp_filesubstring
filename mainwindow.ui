@@ -60,7 +60,7 @@
       <item>
        <widget class="QLineEdit" name="temp">
         <property name="maxLength">
-         <number>8192</number>
+         <number>192</number>
         </property>
        </widget>
       </item>

@@ -107,8 +107,6 @@ bool calcThread::isTextData(const QByteArray& data) {
     return state.invalidChars <= 2;
 }
 
-
-
 void calcThread::check(const QList<QString> &files){
     std::unordered_set<uint32_t> tempTrigrams;
     addTrigram(tempTrigrams, temp.toStdString().data(), temp.size());
@@ -128,7 +126,7 @@ void calcThread::check(const QList<QString> &files){
                 throw std::runtime_error("cannot open " + fileName);
             }
 
-            char fromFile[BUFF_SIZE - TEXT_MAX_SIZE];
+            char fromFile[BUFF_SIZE];
 
             std::unordered_set<uint32_t>& fileTrigrams = trigrams[fileName];
             for (uint32_t trigram: tempTrigrams){
@@ -141,7 +139,7 @@ void calcThread::check(const QList<QString> &files){
             uint64_t len = readBlock(file, fromFile, BUFF_SIZE);
             QString last;
             while (len > 0){
-                QString string = temp + char(0) + last + QString(fromFile);
+                QString string = temp + char(0) + last + QString::fromUtf8(fromFile, len);
                 std::vector<int> z(string.size());
                 z_func(string, z);
                 int tsize = temp.size(), ssize = string.size();
@@ -150,12 +148,8 @@ void calcThread::check(const QList<QString> &files){
                         cnt++;
                     }
                 }
-                last = QString(fromFile).remove(0, BUFF_SIZE - TEXT_MAX_SIZE);
+                last = QString(fromFile).remove(0, (len >= TEXT_MAX_SIZE ? len - TEXT_MAX_SIZE : 0));
                 len = readBlock(file, fromFile, BUFF_SIZE - TEXT_MAX_SIZE);
-                if (!isTextData(QByteArray(fromFile, len))){
-                    cnt = 0;
-                    break;
-                }
             }
 
             if (cnt > 0){

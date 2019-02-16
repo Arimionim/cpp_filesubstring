@@ -99,6 +99,7 @@ void MainWindow::on_startButton_clicked()
     connect(calc, &calcThread::sendFile, this, &MainWindow::getFile);
     connect(&calc->watcher, &QFileSystemWatcher::directoryChanged, this, &MainWindow::dataChanged);
 
+
     connect(job, &QThread::finished, calc, &calcThread::deleteLater);
     connect(job, &QThread::finished, job, &QThread::deleteLater);
 
@@ -142,6 +143,6 @@ void MainWindow::setProgress(int v){
 
 void MainWindow::on_stopButton_clicked()
 {
-    dataChanged();
     job->requestInterruption();
+    dataChanged();
 }

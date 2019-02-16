@@ -73,7 +73,6 @@ void calcThread::setTrigrams(QFile & file){
 void z_func(QString string, std::vector<int> & res){
     int left = 0, right = 0, n = string.size();
     for (int i = 1; i < n; i++){
-
         size_t idx = static_cast<size_t>(i);
         res[idx] = std::max(0, std::min(right - i, res[idx - static_cast<size_t>(left)]));
         while (i + res[idx] < n && string[res[idx]] == string[i + res[idx]]){
@@ -139,24 +138,24 @@ void calcThread::check(const QList<QString> &files){
             }
 
 
-            uint64_t len = readBlock(file, fromFile, BUFF_SIZE - TEXT_MAX_SIZE);
+            uint64_t len = readBlock(file, fromFile, BUFF_SIZE);
             QString last;
             while (len > 0){
-                QString string = temp + char(0) + QString(fromFile) + last;
+                QString string = temp + char(0) + last + QString(fromFile);
                 std::vector<int> z(string.size());
                 z_func(string, z);
                 int tsize = temp.size(), ssize = string.size();
-                for (int i = tsize + last.size(); i < ssize; i++){
+                for (int i = tsize + last.size() + 1; i < ssize; i++){
                     if (z[i] == tsize){
                         cnt++;
                     }
                 }
+                last = QString(fromFile).remove(0, len - TEXT_MAX_SIZE);
                 len = readBlock(file, fromFile, BUFF_SIZE - TEXT_MAX_SIZE);
                 if (!isTextData(QByteArray(fromFile, len))){
                     cnt = 0;
                     break;
                 }
-                last = QString(fromFile).remove(0, len - TEXT_MAX_SIZE);
             }
 
             if (cnt > 0){

@@ -15,8 +15,8 @@ class calcThread : public QObject
     Q_OBJECT
 public:
     calcThread(QString const & path, QString const & temp,
-               std::unordered_map<std::string, std::unordered_set<uint32_t>>& trigrams, QFileSystemWatcher &watcher)
-        :path(path), temp(temp), trigrams(trigrams), watcher(watcher), dirChanged(true){}
+               std::unordered_map<std::string, std::unordered_set<uint32_t>>& trigrams, QFileSystemWatcher &watcher, QList<QString> &files)
+        :path(path), temp(temp), trigrams(trigrams), watcher(watcher), dirChanged(true), files(files){}
 
     QFileSystemWatcher &watcher;
     QString path;
@@ -33,6 +33,7 @@ signals:
     void sendFile(QString path, int, bool error);
 
 private:
+    QList<QString> &files;
     const int BUFF_SIZE = 8192;
     const int TEXT_MAX_SIZE = 192;
     int numFiles;

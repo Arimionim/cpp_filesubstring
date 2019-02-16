@@ -31,6 +31,8 @@ private:
     std::unordered_map<std::string, std::unordered_set<uint32_t>> trigrams;
 
     QFileSystemWatcher watcher;
+    QList<QString> files;
+
 
 
 private slots:

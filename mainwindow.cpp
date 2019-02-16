@@ -35,7 +35,6 @@ MainWindow::~MainWindow()
 
 
 void MainWindow::dataChanged(){
-    ui->statusBar->showMessage("Dir was changed", 1000);
     rootPath = "";
     trigrams.clear();
 }
@@ -82,7 +81,7 @@ void MainWindow::on_startButton_clicked()
     }
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(true);
-    calcThread *calc = new calcThread(model->filePath(ui->dir->rootIndex()), temp, trigrams, watcher);
+    calcThread *calc = new calcThread(model->filePath(ui->dir->rootIndex()), temp, trigrams, watcher, files);
     ui->result->clear();
     job = new QThread;
 
@@ -143,5 +142,6 @@ void MainWindow::setProgress(int v){
 
 void MainWindow::on_stopButton_clicked()
 {
+    dataChanged();
     job->requestInterruption();
 }

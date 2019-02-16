@@ -171,11 +171,12 @@ void calcThread::check(const QList<QString> &files){
 
 void calcThread::run()
 {
-    QList<QString> files;
-    numFiles = 0;
+    numFiles = files.size();
     if (dirChanged){
         watcher.removePaths(watcher.directories());
         watcher.removePaths(watcher.files());
+        files.clear();
+        numFiles = 0;
         listfilesindir(path, &files);
     }
     check(files);

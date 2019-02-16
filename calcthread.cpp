@@ -150,7 +150,7 @@ void calcThread::check(const QList<QString> &files){
                         cnt++;
                     }
                 }
-                last = QString(fromFile).remove(0, len - TEXT_MAX_SIZE);
+                last = QString(fromFile).remove(0, BUFF_SIZE - TEXT_MAX_SIZE);
                 len = readBlock(file, fromFile, BUFF_SIZE - TEXT_MAX_SIZE);
                 if (!isTextData(QByteArray(fromFile, len))){
                     cnt = 0;

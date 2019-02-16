@@ -38,7 +38,7 @@ void calcThread::listfilesindir(QString path, QList<QString> *files)
                     QFile file(fileInfo.filePath());
 
                     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-                        return;
+                        continue;
                     }
 
                     setTrigrams(file);
